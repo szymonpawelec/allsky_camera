@@ -6,7 +6,7 @@ import logging
 class Ping(QThread):
     def __init__(self):
         super(QThread,self).__init__()
-        self.logger = logging.getLogger(__name__)
+        self.logger = logging.getLogger("Ping")
         self.ThreadActive = False
         
     def run(self):
