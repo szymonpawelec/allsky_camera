@@ -18,26 +18,26 @@ class myHandler(BaseHTTPRequestHandler):
 
 			sendReply = False
 			if self.path.endswith(".html"):
-				mimetype='text/html'
+				mimetype = 'text/html'
 				sendReply = True
 			if self.path.endswith(".jpg"):
-				mimetype='image/jpg'
+				mimetype = 'image/jpg'
 				sendReply = True
 			if self.path.endswith(".gif"):
-				mimetype='image/gif'
+				mimetype = 'image/gif'
 				sendReply = True
 			if self.path.endswith(".js"):
-				mimetype='application/javascript'
+				mimetype = 'application/javascript'
 				sendReply = True
 			if self.path.endswith(".css"):
-				mimetype='text/css'
+				mimetype = 'text/css'
 				sendReply = True
 
 			if sendReply == True:
 				#Open the static file requested and send it
 				f = open(curdir + sep + self.path, 'rb') 
 				self.send_response(200)
-				self.send_header('Content-type',mimetype)
+				self.send_header('Content-type', mimetype)
 				self.end_headers()
 				self.wfile.write(f.read())
 				f.close()
