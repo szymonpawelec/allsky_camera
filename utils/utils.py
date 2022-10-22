@@ -5,6 +5,7 @@ from datetime import date
 from logging.handlers import TimedRotatingFileHandler
 from functools import wraps
 
+
 def makedir(func):
     # @wraps
     def wrapper(*args, **kwargs):
@@ -14,12 +15,13 @@ def makedir(func):
         func(*args, **kwargs)
     return wrapper
 
+
 class DirTimedRotatingFileHandler(TimedRotatingFileHandler):
     def __init__(self, **kwargs):
         TimedRotatingFileHandler.__init__(self, **kwargs)
     
     @makedir
-    def emit(self,record):
+    def emit(self, record):
         """
         Emit a record.
 
@@ -34,6 +36,7 @@ class DirTimedRotatingFileHandler(TimedRotatingFileHandler):
             logging.FileHandler.emit(self, record)
         except Exception:
             self.handleError(record)
+
 
 def setup_logger(level, path):
     logger = logging.getLogger(__name__)
