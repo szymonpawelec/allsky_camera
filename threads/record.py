@@ -6,13 +6,13 @@ from filepaths import paths
 from utils.utils import makedir
 from datetime import date, datetime
 
+
 class Record(QThread):
-        
-    def __init__(self,camera):
-        super(QThread,self).__init__()
+    def __init__(self, camera):
+        super(QThread, self).__init__()
         self.logger = logging.getLogger(__name__)
         self.camera = camera
-        self.ThreadActive = False
+        self.active = False
         self.rec_fps = 25
         self.width = camera.width
         self.height = camera.height
@@ -21,7 +21,7 @@ class Record(QThread):
     def run(self):
         if self.camera.capturing:
             self.logger.info("Thread was started")
-            self.ThreadActive = True
+            self.active = True
             self.path = paths["database"] + str(date.today()) + paths["records"]
             filename = str(datetime.now().strftime('%H.%M.%S'))+".mp4"
             
@@ -29,7 +29,7 @@ class Record(QThread):
             fourcc = cv2.VideoWriter_fourcc(*'XVID')
             out = cv2.VideoWriter(self.path + filename, fourcc, self.rec_fps, (self.width,  self.height))
                     
-            while self.ThreadActive and self.camera.capturing:
+            while self.active and self.camera.capturing:
                 if (self.camera.width != self.width) or (self.camera.height != self.height):
                     frame = cv2.resize(self.camera.frame,(self.width,self.height),
                         fx=0, fy=0, interpolation = cv2.INTER_CUBIC)
@@ -45,14 +45,14 @@ class Record(QThread):
 
     def stop_recording(self):
         self.logger.info("Thread was stopped")
-        self.ThreadActive = False
+        self.active = False
         self.quit()
         
     def running(self):
         self.logger.info(f"Thread running status: {self.isRunning()}")
     
     def set_resolution(self, par, res):
-        if self.ThreadActive:
+        if self.active:
             self.logger.warning("Cannot set resolution: camera is already recording")
         else:
             self.width = res[0]
@@ -61,12 +61,11 @@ class Record(QThread):
             
 
 class Timelapse(QThread):
-        
-    def __init__(self,camera):
-        super(QThread,self).__init__()
+    def __init__(self, camera):
+        super(QThread, self).__init__()
         self.logger = logging.getLogger(__name__)
         self.camera = camera
-        self.ThreadActive = False
+        self.active = False
         self.rec_fps = 25
         self.timelapse = 3
         self.width = camera.width
@@ -76,7 +75,7 @@ class Timelapse(QThread):
     def run(self):
         if self.camera.capturing:
             self.logger.info("Thread was started")
-            self.ThreadActive = True
+            self.active = True
             self.path = paths["database"] + str(date.today()) + paths["timelapse"]
             filename = str(datetime.now().strftime('%H.%M.%S'))+".mp4"
             
@@ -84,7 +83,7 @@ class Timelapse(QThread):
             fourcc = cv2.VideoWriter_fourcc(*'XVID')
             out = cv2.VideoWriter(self.path + filename, fourcc, self.rec_fps, (self.width,  self.height))
                     
-            while self.ThreadActive and self.camera.capturing:
+            while self.active and self.camera.capturing:
                 if (self.camera.width != self.width) or (self.camera.height != self.height):
                     frame = cv2.resize(self.camera.frame,(self.width,self.height),
                         fx=0, fy=0, interpolation = cv2.INTER_CUBIC)
@@ -100,16 +99,16 @@ class Timelapse(QThread):
 
     def stop_recording(self):
         self.logger.info("Thread was stopped")
-        self.ThreadActive = False
+        self.active = False
         self.quit()
         
     def running(self):
         self.logger.info(f"Thread running status: {self.isRunning()}")
     
     def set_resolution(self, par, res):
-        if self.ThreadActive:
+        if self.active:
             self.logger.warning("Cannot set resolution: camera is already recording")
         else:
             self.width = res[0]
             self.height = res[1]
-            self.logger.info(f"Image resolution was set to: {self.width}x{self.height}")    
+            self.logger.info(f"Image resolution was set to: {self.width}x{self.height}")

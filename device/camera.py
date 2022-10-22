@@ -7,8 +7,9 @@ import cv2
 import numpy as np
 import time
 
+
 class Camera:
-    def __init__(self,default_settings):
+    def __init__(self, default_settings):
         self.logger = logging.getLogger(__name__)
         
         env_filename = os.getenv('ZWO_ASI_LIB')
@@ -25,7 +26,8 @@ class Camera:
         elif env_filename:
             asi.init(env_filename)
         else:
-            self.logger.error('The filename of the SDK library is required (or set ZWO_ASI_LIB environment variable with the filename)')
+            self.logger.error('The filename of the SDK library is required \
+                              (or set ZWO_ASI_LIB environment variable with the filename)')
             sys.exit(1)
             
         self.num_cameras = asi.get_num_cameras()
@@ -87,7 +89,7 @@ class Camera:
         self.logger.info("Camera was initialized successfully")
         
     def print_camera_controls(self):
-        # Get all of the camera controls
+        # Get camera controls
         print('')
         print('Camera controls:')
         for cn in sorted(self.controls.keys()):
@@ -108,7 +110,7 @@ class Camera:
         jpg_as_np = np.frombuffer(image, dtype=np.uint8)
         
         # convert into 3 channel picture
-        self.frame = jpg_as_np.reshape(self.height,self.width,3)
+        self.frame = jpg_as_np.reshape(self.height, self.width, 3)
     
     def __del__(self):
         self.camera.close()
@@ -134,22 +136,22 @@ class Camera:
         self.camera.set_control_value(asi.ASI_GAMMA, self.gamma)
         self.logger.info(f"Brightness set to: {self.brightness}")
     
-    def set_color_balance(self, whiteBalanceB, whiteBalanceR, whiteBalance):
-        self.whiteBalanceB = whiteBalanceB
-        self.whiteBalanceR = whiteBalanceR
-        self.whiteBalance = whiteBalance
-        self.camera.set_control_value(asi.ASI_WB_B, whiteBalanceB,whiteBalance)
-        self.camera.set_control_value(asi.ASI_WB_R, whiteBalanceR,whiteBalance)
-        self.logger.info(f"Blue channel balance set to: {self.whiteBalanceB}")
-        self.logger.info(f"Red channel balance set to: {self.whiteBalanceR}")
-        self.logger.info(f"Auto color balance is: {self.whiteBalance}")
+    def set_color_balance(self, white_balance_b, white_balance_r, white_balance):
+        self.white_balance_b = white_balance_b
+        self.white_balance_r = white_balance_r
+        self.white_balance = white_balance
+        self.camera.set_control_value(asi.ASI_WB_B, white_balance_b, white_balance)
+        self.camera.set_control_value(asi.ASI_WB_R, white_balance_r, white_balance)
+        self.logger.info(f"Blue channel balance set to: {self.white_balance_b}")
+        self.logger.info(f"Red channel balance set to: {self.white_balance_r}")
+        self.logger.info(f"Auto color balance is: {self.white_balance}")
     
     def set_flip(self, flip):
         self.flip = flip
         self.camera.set_control_value(asi.ASI_FLIP, flip)
         self.logger.info(f"Camera image flip: {self.flip}")
         
-    def auto_exp(self,auto):
+    def auto_exp(self, auto):
         self.autoExposure = auto
         # possible_settings = ('Exposure', 'Gain','WB_R', 'WB_B')
         
@@ -158,7 +160,7 @@ class Camera:
             self.controls['Exposure']['DefaultValue'],
             True)
   
-    def auto_gain(self,auto):
+    def auto_gain(self, auto):
         self.autoGain = auto
         # possible_settings = ('Exposure', 'Gain','WB_R', 'WB_B')
         
