@@ -60,7 +60,7 @@ class Server(QThread):
         try:
             # Create a web server and define the handler to manage the
             # incoming request
-            server = HTTPServer(('192.168.0.245', 8080), myHandler)
+            server = HTTPServer(('192.168.8.174', 8080), myHandler)
             self.logger.info("Started httpserver on port 8080")
 
         # Wait forever for incoming http requests

@@ -54,8 +54,7 @@ def setup_logger(level, path):
         encoding=None,
         delay=True,
         utc=False,
-        atTime=None,
-        errors=None)
+        atTime=None)
     
     handler.suffix = "%Y-%m-%d_%H-%M-%S" + ".csv"
     handler.setFormatter(formatter)

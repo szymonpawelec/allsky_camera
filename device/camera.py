@@ -104,7 +104,7 @@ class Camera:
         exposure = self.camera.get_control_value(1)[0]
         
         # get image from camera as a stream of bytes
-        image=self.camera.get_video_data(2*exposure+500,blank_image)
+        image = self.camera.get_video_data(2*exposure+1500, blank_image)
     
         # convert bytes to numpy array/vector
         jpg_as_np = np.frombuffer(image, dtype=np.uint8)
