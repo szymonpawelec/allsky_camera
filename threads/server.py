@@ -44,7 +44,7 @@ class myHandler(BaseHTTPRequestHandler):
             return
 
         except IOError:
-            self.send_error(404, 'File Not Found: %s' % self.path)
+            self.send_error(404, 'File Not Found! %s' % self.path)
 
 
 class Server(QThread):
@@ -61,7 +61,7 @@ class Server(QThread):
             # Create a web server and define the handler to manage the
             # incoming request
             server = HTTPServer(('192.168.8.174', 8080), myHandler)
-            self.logger.info("Started httpserver on port 8080")
+            self.logger.info("Started http server on port 8080")
 
         # Wait forever for incoming http requests
         # server.serve_forever()

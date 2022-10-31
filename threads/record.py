@@ -67,7 +67,7 @@ class Timelapse(QThread):
         self.camera = camera
         self.active = False
         self.rec_fps = 25
-        self.timelapse = 3
+        self.timelapse = 5
         self.width = camera.width
         self.height = camera.height
         

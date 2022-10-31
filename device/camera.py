@@ -123,7 +123,7 @@ class Camera:
         
     def set_exposure(self, exposure):  # in seconds
         self.exposure = exposure
-        self.camera.set_control_value(asi.ASI_EXPOSURE, int(self.exposure*1e6))  # microseconds
+        self.camera.set_control_value(asi.ASI_EXPOSURE, int(self.exposure*1e6), True)  # microseconds
         self.logger.info(f"Exposure set to: {self.exposure}")
         
     def set_gamma(self, gamma):
