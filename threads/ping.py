@@ -3,6 +3,7 @@ import os
 import time
 import logging
 
+
 class Ping(QThread):
     def __init__(self):
         super(QThread,self).__init__()

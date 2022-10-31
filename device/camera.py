@@ -85,9 +85,14 @@ class Camera:
             default_settings["whiteBalanceR"],
             default_settings["whiteBalance"]
             )
-        
+
+        self.set_auto_exp(default_settings["autoExposure"])
+        self.set_max_auto_exp(default_settings["max_auto_exp"])
+        self.set_auto_gain(default_settings["autoGain"])
+        self.set_max_auto_gain(default_settings["max_auto_gain"])
+
         self.logger.info("Camera was initialized successfully")
-        
+
     def print_camera_controls(self):
         # Get camera controls
         print('')
@@ -102,9 +107,12 @@ class Camera:
         
         # get exposure time:
         exposure = self.camera.get_control_value(1)[0]
-        
+
         # get image from camera as a stream of bytes
-        image = self.camera.get_video_data(2*exposure+1500, blank_image)
+        try:
+            image = self.camera.get_video_data(2*exposure+500, blank_image)
+        except Exception as e:
+            print(e)
     
         # convert bytes to numpy array/vector
         jpg_as_np = np.frombuffer(image, dtype=np.uint8)
@@ -120,12 +128,22 @@ class Camera:
         self.gain = gain
         self.camera.set_control_value(asi.ASI_GAIN, gain)
         self.logger.info(f"Gain set to: {self.gain}")
-        
+
+    def set_max_auto_gain(self, max_gain):
+        self.max_gain = max_gain
+        self.camera.set_control_value(asi.ASI_AUTO_MAX_GAIN, max_gain)
+        self.logger.info(f"Max auto gain set to: {self.max_gain}")
+
     def set_exposure(self, exposure):  # in seconds
         self.exposure = exposure
-        self.camera.set_control_value(asi.ASI_EXPOSURE, int(self.exposure*1e6), True)  # microseconds
+        self.camera.set_control_value(asi.ASI_EXPOSURE, int(self.exposure*1e6))  # microseconds
         self.logger.info(f"Exposure set to: {self.exposure}")
-        
+
+    def set_max_auto_exp(self, max_exp):
+        self.max_exp = max_exp
+        self.camera.set_control_value(asi.ASI_AUTO_MAX_EXP, max_exp * 1000)
+        self.logger.info(f"Max auto exposure set to: {self.max_exp}")
+
     def set_gamma(self, gamma):
         self.gamma = gamma
         self.camera.set_control_value(asi.ASI_GAMMA, self.gamma)
@@ -151,20 +169,20 @@ class Camera:
         self.camera.set_control_value(asi.ASI_FLIP, flip)
         self.logger.info(f"Camera image flip: {self.flip}")
         
-    def auto_exp(self, auto):
-        self.autoExposure = auto
+    def set_auto_exp(self, auto):
         # possible_settings = ('Exposure', 'Gain','WB_R', 'WB_B')
-        
+        self.auto_exposure = auto
         self.camera.set_control_value(
             self.controls['Exposure']['ControlType'],
-            self.controls['Exposure']['DefaultValue'],
-            True)
+            self.camera.get_control_value(1)[0],
+            auto)
+        self.logger.info(f"Auto exposure set to: {self.auto_exposure}")
   
-    def auto_gain(self, auto):
-        self.autoGain = auto
+    def set_auto_gain(self, auto):
         # possible_settings = ('Exposure', 'Gain','WB_R', 'WB_B')
-        
+        self.auto_gain = auto
         self.camera.set_control_value(
             self.controls['Gain']['ControlType'],
-            self.controls['Gain']['DefaultValue'],
-            self.autoGain)
+            self.gain,
+            auto)
+        self.logger.info(f"Auto gain set to: {self.auto_gain}")
