@@ -4,6 +4,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import cv2
 from os import curdir, sep
 from filepaths import paths
+from utils.utils import add_text_to_image
 
 
 class myHandler(BaseHTTPRequestHandler):
@@ -11,7 +12,7 @@ class myHandler(BaseHTTPRequestHandler):
     # Handler for the GET requests
     def do_GET(self):
         if self.path == "/":
-            self.path = r"./index.html"
+            self.path = r"/index.html"
 
         try:
             # Check the file extension required and
@@ -44,7 +45,7 @@ class myHandler(BaseHTTPRequestHandler):
             return
 
         except IOError:
-            self.send_error(404, 'File Not Found! %s' % self.path)
+            self.send_error(404, 'File Not Found... %s' % self.path)
 
 
 class Server(QThread):
@@ -53,6 +54,7 @@ class Server(QThread):
         self.camera = camera
         self.logger = logging.getLogger("Server")
         self.active = False
+        self.server = None
 
     def run(self):
         self.active = True
@@ -60,18 +62,31 @@ class Server(QThread):
         try:
             # Create a web server and define the handler to manage the
             # incoming request
-            # server = HTTPServer(('192.168.8.174', 8080), myHandler)
-            server = HTTPServer(('192.168.0.245', 8080), myHandler)
-            self.logger.info("Started http server on port 8080")
+            self.server = HTTPServer(('192.168.8.174', 90), myHandler)
+            self.logger.info("Started http server on port 90")
 
         # Wait forever for incoming http requests
         # server.serve_forever()
 
         except KeyboardInterrupt:
             self.logger.info("^C received, shutting down the web server")
-            server.socket.close()
+            self.server.socket.close()
 
         while self.active:
             if self.camera.capturing:
-                cv2.imwrite(paths["database"] + "last_frame.jpg", self.camera.frame)
-            server.handle_request()
+                frame = add_text_to_image(
+                    self.camera.frame,
+                    self.camera.img_description,
+                    top_left_xy=(0, 10),
+                    font_scale=.7,
+                    font_thickness=1,
+                    font_color_rgb=(232, 162, 0),
+                )
+                cv2.imwrite(paths["database"] + "last_frame.jpg", frame)
+            self.server.handle_request()
+
+    def stop(self):
+        self.logger.info("Thread was stopped")
+        self.server.socket.close()
+        self.active = False
+        self.quit()

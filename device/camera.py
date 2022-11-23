@@ -5,7 +5,7 @@ import zwoasi as asi    #https://zwoasi.readthedocs.io/en/latest/index.html
 import sys
 import cv2
 import numpy as np
-import time
+from datetime import datetime
 
 
 class Camera:
@@ -73,6 +73,8 @@ class Camera:
         self.width = default_settings["width"]
         self.height = default_settings["height"]
         self.capturing = False
+        self.img_description = None
+        self.count = 1
         
         self.camera.disable_dark_subtract()
         self.set_gain(default_settings["gain"])
@@ -108,9 +110,10 @@ class Camera:
         # get exposure time:
         exposure = self.camera.get_control_value(1)[0]
 
+        self.set_img_description()
         # get image from camera as a stream of bytes
         try:
-            image = self.camera.get_video_data(2*exposure+500, blank_image)
+            image = self.camera.get_video_data(2*exposure+5000, blank_image)
         except Exception as e:
             print(e)
     
@@ -119,10 +122,35 @@ class Camera:
         
         # convert into 3 channel picture
         self.frame = jpg_as_np.reshape(self.height, self.width, 3)
+        self.count += 1
     
     def __del__(self):
         self.camera.close()
         self.logger.info("Camera was closed")
+
+    def set_img_description(self):
+        label_txt = f"Time: {str(datetime.now().strftime('%Y/%m/%d %H:%M:%S'))}\n"
+        label_txt += f"Frame number: {self.count}\n"
+        # get exposure time:
+        self.exposure = self.camera.get_control_value(1)[0] / 1e6
+        label_txt += f"Exposure: {self.exposure}"
+        # get max auto exposure time:
+        max_auto_exp = self.camera.get_control_value(11)[0] / 1e3
+        label_txt += f"/{max_auto_exp}\n"
+
+        # get gain:
+        self.gain = self.camera.get_control_value(0)[0]
+        label_txt += f"Gain: {self.gain}"
+        # get max auto gain:
+        max_auto_gain = self.camera.get_control_value(10)[0]
+        label_txt += f"/{max_auto_gain}\n"
+
+        # get Red/Blue:
+        red = self.camera.get_control_value(3)[0]
+        blue = self.camera.get_control_value(4)[0]
+        label_txt += f"R: {red}, B: {blue}\n"
+
+        self.img_description = label_txt
     
     def set_gain(self, gain):
         self.gain = gain
