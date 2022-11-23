@@ -5,6 +5,7 @@ import time
 from filepaths import paths
 from utils.utils import makedir
 from datetime import date, datetime
+from utils.utils import add_text_to_image
 
 
 class Record(QThread):
@@ -23,7 +24,7 @@ class Record(QThread):
             self.logger.info("Thread was started")
             self.active = True
             self.path = paths["database"] + str(date.today()) + paths["records"]
-            filename = str(datetime.now().strftime('%H.%M.%S'))+".mp4"
+            filename = str(datetime.now().strftime('%Y-%m-%d_%H.%M.%S'))+".mp4"
             
             print(self.path + filename)
             fourcc = cv2.VideoWriter_fourcc(*'XVID')
@@ -33,9 +34,25 @@ class Record(QThread):
                 if (self.camera.width != self.width) or (self.camera.height != self.height):
                     frame = cv2.resize(self.camera.frame,(self.width,self.height),
                         fx=0, fy=0, interpolation = cv2.INTER_CUBIC)
+                    frame = add_text_to_image(
+                        frame,
+                        self.camera.img_description,
+                        top_left_xy=(0, 10),
+                        font_scale=.7,
+                        font_thickness=1,
+                        font_color_rgb=(232, 162, 0),
+                    )
                     out.write(frame)
                 else:
-                    out.write(self.camera.frame)
+                    frame = add_text_to_image(
+                        self.camera.frame,
+                        self.camera.img_description,
+                        top_left_xy=(0, 10),
+                        font_scale=.7,
+                        font_thickness=1,
+                        font_color_rgb=(232, 162, 0),
+                    )
+                    out.write(frame)
                 
                 time.sleep(1/self.rec_fps)
                 
@@ -77,7 +94,7 @@ class Timelapse(QThread):
             self.logger.info("Thread was started")
             self.active = True
             self.path = paths["database"] + str(date.today()) + paths["timelapse"]
-            filename = str(datetime.now().strftime('%H.%M.%S'))+".mp4"
+            filename = str(datetime.now().strftime('%Y-%m-%d_%H.%M.%S'))+".mp4"
             
             print(self.path + filename)
             fourcc = cv2.VideoWriter_fourcc(*'XVID')
@@ -87,9 +104,25 @@ class Timelapse(QThread):
                 if (self.camera.width != self.width) or (self.camera.height != self.height):
                     frame = cv2.resize(self.camera.frame,(self.width,self.height),
                         fx=0, fy=0, interpolation = cv2.INTER_CUBIC)
+                    frame = add_text_to_image(
+                        frame,
+                        self.camera.img_description,
+                        top_left_xy=(0, 10),
+                        font_scale=.7,
+                        font_thickness=1,
+                        font_color_rgb=(232, 162, 0),
+                    )
                     out.write(frame)
                 else:
-                    out.write(self.camera.frame)
+                    frame = add_text_to_image(
+                        self.camera.frame,
+                        self.camera.img_description,
+                        top_left_xy=(0, 10),
+                        font_scale=.7,
+                        font_thickness=1,
+                        font_color_rgb=(232, 162, 0),
+                    )
+                    out.write(frame)
                 
                 time.sleep(self.timelapse)
                 
