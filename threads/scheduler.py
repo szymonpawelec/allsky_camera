@@ -20,21 +20,12 @@ class Scheduler(QThread):
 
         while self.ThreadActive:
             # start timelapse thread
-            if not is_day_hour('23:34', '23:35'):
+            if not is_day_hour('08:00', '16:00'):
                 self.interface.th_lapse.start()
             elif self.interface.th_lapse.isRunning():
                 self.interface.th_lapse.stop_recording()
                 self.logger.info("Timelapse thread stopped")
-                # restart server thread
-                self.interface.th_server.stop()
-                self.logger.info("Server thread stopped")
-                time.sleep(1)
-                self.interface.th_server.start()
                 time.sleep(5)
-
-
-
-            # time.sleep(60)
 
     def stop(self):
         self.logger.info("Thread was stopped")

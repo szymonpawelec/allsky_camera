@@ -11,7 +11,7 @@ from datetime import datetime
 class Camera:
     def __init__(self, default_settings):
         self.logger = logging.getLogger("Camera")
-        
+        self.init_time = datetime.now()
         env_filename = os.getenv('ZWO_ASI_LIB')
         
         parser = argparse.ArgumentParser(description='Process and save images from a camera')
@@ -129,7 +129,8 @@ class Camera:
         self.logger.info("Camera was closed")
 
     def set_img_description(self):
-        label_txt = f"Time: {str(datetime.now().strftime('%Y/%m/%d %H:%M:%S'))}\n"
+        label_txt = f"Camera working for: {str(datetime.now() - self.init_time).split('.', 2)[0]}\n"
+        label_txt += f"Time: {str(datetime.now().strftime('%Y/%m/%d %H:%M:%S'))}\n"
         label_txt += f"Frame number: {self.count}\n"
         # get exposure time:
         self.exposure = self.camera.get_control_value(1)[0] / 1e6
