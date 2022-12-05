@@ -15,8 +15,11 @@ class Scheduler(QThread):
         self.ThreadActive = True
                
         self.logger.info("Thread is active")
-        time.sleep(10)
+        time.sleep(5)
         self.interface.th_play.start()
+        time.sleep(5)
+        self.interface.th_snapshot.start()
+        self.interface.th_histogram.start()
 
         while self.ThreadActive:
             # start timelapse thread

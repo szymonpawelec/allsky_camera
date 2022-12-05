@@ -31,6 +31,8 @@ def makedir(func):
         os.makedirs(paths["database"] + str(date.today()) + paths["log"], exist_ok=True)
         os.makedirs(paths["database"] + str(date.today()) + paths["records"], exist_ok=True)
         os.makedirs(paths["database"] + str(date.today()) + paths["timelapse"], exist_ok=True)
+        os.makedirs(paths["database"] + str(date.today()) + paths["snapshot"], exist_ok=True)
+        os.makedirs(paths["database"] + str(date.today()) + paths["histogram"], exist_ok=True)
         func(*args, **kwargs)
     return wrapper
 

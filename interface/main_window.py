@@ -1,7 +1,8 @@
 from threads.play import Play
-from threads.record import Record, Timelapse
+from threads.record import Record, Timelapse, Snapshot
 from threads.ping import Ping
 from threads.scheduler import Scheduler
+from threads.histogram import Histogram
 from threads.camera_settings import CameraSettingsMonitor
 from threads.server import Server
 from PyQt5.QtWidgets import QMainWindow
@@ -20,13 +21,16 @@ class MainWindow(QMainWindow):
                 
         self.th_ping = Ping()
         self.th_ping.start()
-
-        self.th_scheduler = Scheduler(self)
-        self.th_scheduler.start()
         
         self.th_server = Server(self.camera)
         self.th_server.start()
-        
+
+        self.th_snapshot = Snapshot(self.camera)
+        self.th_histogram = Histogram(self.camera)
+
+        self.th_scheduler = Scheduler(self)
+        self.th_scheduler.start()
+
         self.setGeometry(0, 0, 1000, 525)
         self.setWindowTitle("Allsky Camera")
         self.init_ui()
